@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package frl;
+
+message Item {
+  enum Kind {
+    INVALID = 0;
+  }
+}
