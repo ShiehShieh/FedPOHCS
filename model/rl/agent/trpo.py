@@ -73,7 +73,7 @@ class ContinuousPolicyNN(object):
     self.dropout_rate = dropout_rate
     self.seed = seed
     self.linear = linear
-    # Reacher.
+    # Mujoco.
     self.h1 = tf.keras.layers.Dense(
         units=64, use_bias=True,
         activation='tanh',
@@ -111,9 +111,6 @@ class ContinuousPolicyNN(object):
         name="policy_network_o")
     self.r = tf.Variable(
         shape=(num_actions,), dtype=tf.float64, trainable=True,
-        # initial_value=[1.0] * num_actions, name='logstd')  # Swimmers.
-        # initial_value=[2.0] * num_actions, name='logstd')  # Swimmers.
-        # initial_value=[1.0] * num_actions, name='logstd')  # HopperV3.
         initial_value=[0.0] * num_actions, name='logstd')  # MCCs.
 
   def var(self):

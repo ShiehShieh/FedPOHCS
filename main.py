@@ -27,6 +27,7 @@ import model.rl.agent.agent as agent_lib
 import model.rl.agent.critic as critic_lib
 import model.rl.agent.reinforce as reinforce_lib
 import model.rl.agent.trpo as trpo_lib
+import model.rl.comp.svf as svf_lib
 import model.optimizer.dbpg as dbpg_lib
 import model.optimizer.pgd as pgd_lib
 
@@ -87,6 +88,11 @@ flags.DEFINE_float("retry_min", -30, "local objective exceeded this cost will be
 flags.DEFINE_bool("disable_retry", False, "If true, no retry.")
 flags.DEFINE_integer("num_cands", 10, "The size of candidate client set.")
 
+flags.DEFINE_integer("len_modeling_trajectory", 100, "The maximum length of trajectories for dynamics modeling. 100 for Hoppers and 1000 for Mountain Cars.")
+flags.DEFINE_integer("num_modeling_round", 2, "The number of rounds for modeling. 2 for Hoppers and 5 for Mountain Cars.")
+flags.DEFINE_integer("num_test_episodes", 100, "The number of episode for testing. 100 for Hoppers and 10 for Mountain Cars.")
+flags.DEFINE_float("rounding_resolution", 0.4, "The resolution for rounding off observation and action for dynamics modeling. 0.4 for Hoppers and 0.1 for Mountain Cars.")
+
 random.seed(0)
 np.random.seed(0)
 tf.random.set_seed(0)
@@ -99,6 +105,8 @@ def main(_):
   #
   if FLAGS.cs not in ['random', 'powd', 'csh-min', 'csh-max', 'gradnorm']:
     raise NotImplementedError
+
+  svf_lib.set_resolution(FLAGS.rounding_resolution)
 
   # Create env before hand for saving memory.
   envs = []
@@ -120,8 +128,6 @@ def main(_):
     gradient_clip_norm = 10.0
   if FLAGS.env == 'hopper':
     filt = True
-    num_total_clients = 30
-    num_total_clients = 20
     num_total_clients = 60
     timestep_per_batch = 2048
     gradient_clip_norm = 10.0
@@ -135,8 +141,6 @@ def main(_):
   if FLAGS.env == 'mcc':
     timestep_per_batch = 2048
     gradient_clip_norm = 10.0  # MCC.
-    num_total_clients = 100
-    num_total_clients = 30
     num_total_clients = 60
   if FLAGS.env == 'reacher':
     filt = False
@@ -210,7 +214,7 @@ def main(_):
           raise NotImplementedError
         # TODO(XIE,Zhijie): Set num_test_epochs to 40 for report.
         universial_client = client_lib.UniversalClient(
-            envs=fev, future_discount=0.99, lam=0.95, num_test_epochs=40
+            envs=fev, future_discount=0.99, lam=0.95, num_test_episodes=40
         )
 
     envs.append(env)
@@ -312,13 +316,7 @@ def main(_):
               # # MCC.
               # env, optimizer, model_scope='trpo_' + str(i), batch_size=128,
               # num_epoch=1, future_discount=0.99, kl_targ=FLAGS.kl_targ,
-              # # Swimmer.
-              # env, optimizer, model_scope='trpo_' + str(i), batch_size=128,
-              # num_epoch=10, future_discount=0.99, kl_targ=FLAGS.kl_targ,
-              # # Swimmer.
-              # env, optimizer, model_scope='trpo_' + str(i), batch_size=64,
-              # num_epoch=10, future_discount=0.99, kl_targ=FLAGS.kl_targ,
-              # Reacher.
+              # Hopper.
               env, optimizer, model_scope='trpo_' + str(i), batch_size=128,
               num_epoch=1, future_discount=0.99, kl_targ=FLAGS.kl_targ,
               beta=beta, lam=0.95, lr_decay=FLAGS.lr_decay,
@@ -346,14 +344,14 @@ def main(_):
     import time
     start = time.time()
     client = client_lib.Client(
-        # i, 0, agent, env, num_test_epochs=20, parallel=FLAGS.parallel,
         # i, 0, agent, env, num_test_epochs=10, parallel=FLAGS.parallel, # mcc
         # i, 0, agent, env, num_test_epochs=40, parallel=FLAGS.parallel, # mcc one-phase.
         # i, 0, agent, env, num_test_epochs=10, parallel=FLAGS.parallel, # mcc one-phase.
-        # i, 0, agent, env, num_test_epochs=40, parallel=FLAGS.parallel, # swimmer.
-        # i, 0, agent, env, num_test_epochs=20, parallel=FLAGS.parallel, # swimmer.
-        # i, 0, agent, env, num_test_epochs=40, parallel=FLAGS.parallel, # reacher.
-        i, 0, agent, env, num_test_epochs=100, parallel=FLAGS.parallel, # reacher.
+        # i, 0, agent, env, num_test_epochs=100, parallel=FLAGS.parallel, # Hoppers.
+        i, 0, agent, env,
+        len_modeling_trajectory=FLAGS.len_modeling_trajectory,
+        num_modeling_round=FLAGS.num_modeling_round,
+        num_test_episodes=FLAGS.num_test_episodes, parallel=FLAGS.parallel,
         filt=filt, extra_features=set(['next_observations']),
         warmup=FLAGS.eval_heterogeneity)
     if FLAGS.eval_heterogeneity:

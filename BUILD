@@ -64,6 +64,7 @@ py_binary(
         "//model/rl/agent:critic",
         "//model/rl/agent:reinforce",
         "//model/rl/agent:trpo",
+        "//model/rl/comp:svf",
         "//model/optimizer:dbpg",
         "//model/optimizer:pgd",
     ],

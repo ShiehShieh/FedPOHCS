@@ -18,6 +18,14 @@ import tensorflow.compat.v1 as tfv1
 from declarations cimport *
 
 
+RESOLUTION = 0.1
+
+
+def set_resolution(resolution):
+  global RESOLUTION
+  RESOLUTION = resolution
+
+
 def defaultdict_float():
   return defaultdict(float)
 
@@ -35,44 +43,29 @@ def round_resolution(x, resolution):
   return np.round(x / resolution) * resolution
 
 
-def round_obs(obs):
+def round_obs(obs, resolution):
   o = np.zeros(shape=obs.shape)
-  # o = np.copy(obs)
-  # o[0] = round_resolution(obs[0], 0.1)
-  # o[1] = round_resolution(obs[1], 0.001)
-  # logging.error('obs: %f, %f' % (np.max(obs), np.min(obs)))
-  # logging.error(obs)
   for i, ob in enumerate(obs):
     # o[i] = round_resolution(ob, 0.5) # mcc fuzzy.
     # o[i] = round_resolution(ob, 0.1) # mcc.
 
-    # ob = max(min(ob, 5.0), -5.0) # swimmer.
-    # o[i] = round_resolution(ob, 0.4) # swimmer.
+    # o[i] = round_resolution(ob, 0.4) # hopper.
 
-    o[i] = round_resolution(ob, 0.4) # reacher.
+    o[i] = round_resolution(ob, resolution)
   return o
 
 
-def round_act(act):
-  # o = np.copy(act)
+def round_act(act, resolution):
   o = np.zeros(shape=act.shape)
-  # logging.error('act: %f, %f' % (np.max(act), np.min(act)))
   for i, a in enumerate(act):
     # o[i] = round_resolution(a, 0.1) # mcc.
     # o[i] = round_resolution(a, 0.05) # mcc one-phase.
-    # a = max(min(a, 1.0), -1.0)
-    # o[i] = float(a >= 0) # halfcheetah.
-    # o[i] = round_resolution(a, 0.5) # hopper.
 
-    # a = max(min(a, 3.0), -3.0) # swimmer.
-    # o[i] = round_resolution(a, 0.1) # swimmer.
+    # a = max(min(a, 1.0), -1.0) # hopper.
+    # o[i] = round_resolution(a, 0.4) # hopper.
 
-    # a = max(min(a, 2.0), -2.0) # reacher.
-    # o[i] = round_resolution(a, 0.05) # reacher.
-
-    a = max(min(a, 1.0), -1.0) # hopper.
-    # a = max(min(a, 1.5), -1.5) # hopper.
-    o[i] = round_resolution(a, 0.4) # hopper.
+    a = max(min(a, 1.0), -1.0)
+    o[i] = round_resolution(a, resolution)
   return o
 
 
@@ -80,10 +73,10 @@ def update_initial_state_distribution(ism, trajectories):
   '''
   ism: [s] -> float
   '''
+  global RESOLUTION
   for i, trajectory in enumerate(trajectories):
     for j, obs in enumerate(trajectory['observations'][:1]):
-      # obs = round_resolution(obs, 0.2)
-      obs = round_obs(obs)
+      obs = round_obs(obs, RESOLUTION)
       obsk = tuple(obs.tolist())
       ism[obsk] += 1.0
 
@@ -92,18 +85,16 @@ def update_transition_probability(tpm, trajectories):
   '''
   tpm: [s, a, s'] -> float
   '''
+  global RESOLUTION
   for i, trajectory in enumerate(trajectories):
     tactions = trajectory['actions']
     tnobs = trajectory['next_observations']
     for j, obs in enumerate(trajectory['observations']):
       act = tactions[j]
       nobs = tnobs[j]
-      # obs = round_resolution(obs, 0.2)
-      # act = round_resolution(act, 0.1)
-      # nobs = round_resolution(nobs, 0.2)
-      obs = round_obs(obs)
-      act = round_act(act)
-      nobs = round_obs(nobs)
+      obs = round_obs(obs, RESOLUTION)
+      act = round_act(act, RESOLUTION)
+      nobs = round_obs(nobs, RESOLUTION)
       obsk = tuple(obs.tolist())
       actk = tuple(act.tolist())
       nobsk = tuple(nobs.tolist())
@@ -114,17 +105,15 @@ def update_reward_function(rm, trajectories):
   '''
   rm: [s, a, r] -> float
   '''
+  global RESOLUTION
   for i, trajectory in enumerate(trajectories):
     tactions = trajectory['actions']
     trewards = trajectory['reward']
     for j, obs in enumerate(trajectory['observations']):
       act = tactions[j]
-      # r = np.round(trajectory['reward'][j], 2)
       r = trewards[j]
-      # obs = round_resolution(obs, 0.2)
-      # act = round_resolution(act, 0.1)
-      obs = round_obs(obs)
-      act = round_act(act)
+      obs = round_obs(obs, RESOLUTION)
+      act = round_act(act, RESOLUTION)
       obsk = tuple(obs.tolist())
       actk = tuple(act.tolist())
       rmoa = rm[obsk][actk]

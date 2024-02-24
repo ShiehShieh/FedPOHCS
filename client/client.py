@@ -15,7 +15,8 @@ import model.utils.vectorization as vectorization_lib
 
 class Client(object):
   def __init__(
-      self, cid, group, agent, env, num_test_epochs=100, filt=True,
+      self, cid, group, agent, env, len_modeling_trajectory=1000,
+      num_modeling_round=5,  num_test_episodes=100, filt=True,
       parallel=1, extra_features=set(['next_observations', 'probs']),
       universial_vec_env=None, warmup=True):
     self.cid = cid
@@ -27,14 +28,13 @@ class Client(object):
     self.tpm = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
     self.rm = defaultdict(lambda: defaultdict(lambda: [0.0, 0.0]))
     self.vf = dict()
-    self.last_paths = deque(maxlen=5)  # mcc.
-
-    self.last_paths = deque(maxlen=5)  # mcc sync.
-    self.last_paths = deque(maxlen=2)  # Hoppers.
-    # if not warmup:
-    #   self.last_paths = deque(maxlen=0)
-    # self.trajectory_len = 1000
-    self.trajectory_len = 100
+    # self.last_paths = deque(maxlen=5)  # mcc.
+    # self.last_paths = deque(maxlen=5)  # mcc sync.
+    # self.trajectory_len = 1000         # mcc.
+    # self.last_paths = deque(maxlen=2)  # Hoppers.
+    # self.trajectory_len = 100          # Hoppers.
+    self.last_paths = deque(maxlen=num_modeling_round)
+    self.trajectory_len = len_modeling_trajectory
 
     self.num_episodes_seen = 0
     self.num_iter_seen = 0
@@ -45,7 +45,7 @@ class Client(object):
       self.obfilt = filters_lib.ZFilter(
           env.state_dim, clip=5)
       self.rewfilt = filters_lib.ZFilter((), demean=False, clip=10)
-    self.num_test_epochs = num_test_epochs
+    self.num_test_episodes = num_test_episodes
     self.use_svf = False
     self.extra_features = extra_features
     self.parallel = parallel
@@ -298,11 +298,11 @@ class Client(object):
     return np.mean(objs), np.mean(grad_norms)
 
   def test(self, eval_heterogeneity=False):
-    # parallel = self.num_test_epochs
-    # if self.num_test_epochs > 10:
+    # parallel = self.num_test_episodes
+    # if self.num_test_episodes > 10:
     #   parallel = 10
     envs = self.env.get_parallel_envs(self.parallel)
-    paths, episode_rewards = self.rollout(envs, -1, self.num_test_epochs)
+    paths, episode_rewards = self.rollout(envs, -1, self.num_test_episodes)
     if eval_heterogeneity:
       self.last_paths.append(
           utils_lib.truncate_trajectories(paths, self.trajectory_len))
@@ -344,18 +344,18 @@ class Client(object):
 
 
 class UniversalClient(object):
-  def __init__(self, envs, future_discount=0.99, lam=0.98, num_test_epochs=100):
+  def __init__(self, envs, future_discount=0.99, lam=0.98, num_test_episodes=100):
     self.envs = envs
     self.future_discount = future_discount
     self.lam = lam
     self.episode_history = deque(maxlen=5 * self.envs.num_envs)
-    self.num_test_epochs = num_test_epochs
+    self.num_test_episodes = num_test_episodes
     self.num_iter_seen = 0
 
   def test(self, agents, obfilts, rewfilts):
     paths, _, episode_rewards = vectorization_lib.vectorized_rollout(
         agents, self.envs, obfilts, rewfilts, self.future_discount,
-        self.lam, -1, self.num_test_epochs, True, logger=None)
+        self.lam, -1, self.num_test_episodes, True, logger=None)
     return np.mean(episode_rewards, axis=1), np.mean([len(e['reward']) for e in paths])
 
   def experiment(self, num_iter, timestep_per_batch, indices, agents,

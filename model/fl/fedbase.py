@@ -80,14 +80,16 @@ class FederatedBase(object):
     n = 13
     # HalfCheetah-v2.
     n = 23
-    # MountainCarContinuous.
-    n = 3
     # Swimmer.
     n = 10
     # Reacher.
     n = 13
+    # MountainCarContinuous.
+    n = 3
     # Hopper-v2/v3.
     n = 14
+
+    n = client.env.state_dim + client.env.num_actions
     self.afs.append(critic_lib.Critic(n, 200, seed=0, lr=3e-4, epochs=10))
     # from sklearn.linear_model import ElasticNet
     # from sklearn.neural_network import MLPRegressor

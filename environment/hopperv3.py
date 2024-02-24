@@ -73,13 +73,14 @@ def generate_hopper_heterogeneity(i, htype, level, num_total_clients):
   leg_length = 0.04  # The default value from GYM.
   if htype in ['dynamics', 'both'] and i < num_hete:
     if level == 'low':
-      raise NotImplementedError
-    elif level == 'medium':
       # 0.01 - 0.07.
       leg_length = 0.01 + i * (0.06 / (num_total_clients - 1.0))
-    elif level == 'high':
+    elif level == 'medium':
       # 0.01 - 0.10.
       leg_length = 0.01 + i * (0.09 / (num_total_clients - 1.0))
+    elif level == 'high':
+      # 0.01 - 0.15.
+      leg_length = 0.01 + i * (0.14 / (num_total_clients - 1.0))
     else:
       raise NotImplementedError
 
