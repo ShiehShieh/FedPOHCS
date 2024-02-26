@@ -115,6 +115,7 @@ def main(_):
   universial_client = None
   timestep_per_batch = 2048
   filt = True
+  minimum_lr = 1e-8
   # gradient_clip_norm = 0.5  # Reacher-v2.
   # gradient_clip_norm = 100.0  # Reacher-v2.
   gradient_clip_norm = None  # Reacher-v2.
@@ -131,6 +132,7 @@ def main(_):
     num_total_clients = 60
     timestep_per_batch = 2048
     gradient_clip_norm = 10.0
+    # minimum_lr = 1e-4
   if FLAGS.env == 'swimmer':
     filt = False
     num_total_clients = 15
@@ -326,7 +328,7 @@ def main(_):
               # nm_targ_adap=(FLAGS.nm_targ, 5e-2, 100),
               nm_targ_adap=(FLAGS.nm_targ, FLAGS.nm_targ, 50),
               fixed_sigma=FLAGS.fixed_sigma, mu=mu,
-              gradient_clip_norm=gradient_clip_norm,
+              gradient_clip_norm=gradient_clip_norm, minimum_lr=minimum_lr,
               distance_metric=FLAGS.distance_metric,
               ent_coef=FLAGS.ent_coef, ent_decay=FLAGS.ent_decay
           ), init_exp=0.5, final_exp=0.0, anneal_steps=1,

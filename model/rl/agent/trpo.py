@@ -154,6 +154,7 @@ class TRPOActor(pg_lib.PolicyGradient):
                ent_coef=0.01,
                ent_decay=20.0,
                gradient_clip_norm=None,
+               minimum_lr=1e-5,  # 1e-4 for Hoppers, 1e-8 for MCCs.
                seed=None,
                linear=False,
                verbose=True):
@@ -197,6 +198,7 @@ class TRPOActor(pg_lib.PolicyGradient):
     self.init_sigma            = sigma
     self.gradient_clip_norm    = gradient_clip_norm
     self.ent_decay             = ent_decay
+    self.minimum_lr            = minimum_lr
 
     if sigma == 0.0:
       self.is_norm_penalized = False
@@ -488,7 +490,7 @@ class TRPOActor(pg_lib.PolicyGradient):
     # Learning rate decay of 0.98 per round,
     eta = self.base_lr * (self.lr_decay ** num)
     # Set minimum learning rate.
-    eta = max(eta, 1e-4)
+    eta = max(eta, self.minimum_lr)
     self.optimizer.learning_rate.load(eta, self.sess)
 
   def adapt_kl_target(self, num):
