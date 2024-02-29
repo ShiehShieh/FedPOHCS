@@ -12,6 +12,8 @@ from gym.wrappers import TimeLimit
 # import model.utils.vec_env as vec_env_lib
 from stable_baselines3.common.vec_env import SubprocVecEnv, DummyVecEnv
 
+import config.config as config_lib
+
 
 def generate_mountaincarcontinuous_heterogeneity(i, htype, level, num_total_clients):
   out = [-0.6, -0.4]
@@ -129,11 +131,11 @@ class MountianCarContinuous(object):
         'dfr': [0],
     }
     self.output_types={
-        'observations': tf.dtypes.float64,
-        'actions': tf.dtypes.float64,
+        'observations': config_lib.floatX,
+        'actions': config_lib.floatX,
         'seq_mask': tf.dtypes.int32,
-        'reward': tf.dtypes.float64,
-        'dfr': tf.dtypes.float64,
+        'reward': config_lib.floatX,
+        'dfr': config_lib.floatX,
     }
     self.output_shapes={
         'observations': [None, self.state_dim],

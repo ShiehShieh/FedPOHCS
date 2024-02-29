@@ -43,6 +43,7 @@ py_library(
     srcs = ["trpo.py"],
     deps = [
         ":pg",
+        "//config:config",
         "//model/utils:filters",
         "//model/utils:distributions",
         "//model/utils:prob_type",
@@ -54,6 +55,7 @@ py_library(
     name = "critic",
     srcs = ["critic.py"],
     deps = [
+        "//config:config",
     ],
 )
 

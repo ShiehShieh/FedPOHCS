@@ -238,9 +238,11 @@ class CustomizedCAV(object):
         'reward': [[0.0]],
     }
     self.output_types={
-        'observations': tf.dtypes.float64,
-        'actions': tf.dtypes.float64,
-        'reward': tf.dtypes.float64,
+        'observations': config_lib.floatX,
+        'actions': config_lib.floatX,
+        'seq_mask': tf.dtypes.int32,
+        'reward': config_lib.floatX,
+        'dfr': config_lib.floatX,
     }
     self.output_shapes={
         'observations': [None, self.state_dim],

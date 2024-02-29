@@ -3,6 +3,9 @@ package(default_visibility = ["//visibility:public"])
 py_library(
     name = "utils",
     srcs = ["utils.py"],
+    deps = [
+        "//config:config",
+    ],
 )
 
 py_library(

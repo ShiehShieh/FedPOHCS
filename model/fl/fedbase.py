@@ -14,6 +14,8 @@ from multiprocessing import Pool
 
 from mujoco_py.builder import MujocoException
 
+import config.config as config_lib
+
 import model.cs.csh as csh_lib
 import model.cs.gradnorm as gradnorm_lib
 import model.cs.powd as powd_lib
@@ -22,6 +24,9 @@ import model.rl.agent.critic as critic_lib
 import model.rl.agent.vec_agent as vec_agent_lib
 import model.rl.comp.svf as svf_lib
 import model.utils.vectorization as vectorization_lib
+
+
+floatX = config_lib.floatX # theano.config.floatX
 
 
 class FederatedBase(object):
@@ -121,7 +126,7 @@ class FederatedBase(object):
     averaged_ws = [0] * len(cws[0][1])
     for (w, ws) in cws:  # w is the number of local samples
       for i, v in enumerate(ws):
-        averaged_ws[i] += (w / total_weight) * v.astype(np.float64)
+        averaged_ws[i] += (w / total_weight) * v.astype(floatX)
     return averaged_ws
 
   def _inner_sequential_loop(self, i_iter, active_clients, retry_min):

@@ -132,6 +132,7 @@ def main(_):
     num_total_clients = 60
     timestep_per_batch = 2048
     gradient_clip_norm = 10.0
+    config_lib.use_float64()
     # minimum_lr = 1e-4
   if FLAGS.env == 'swimmer':
     filt = False

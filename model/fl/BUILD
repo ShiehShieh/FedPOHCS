@@ -6,6 +6,7 @@ py_library(
         "fedbase.py",
     ],
     deps = [
+        "//config:config",
         "//model/cs:csh",
         "//model/cs:gradnorm",
         "//model/cs:powd",
