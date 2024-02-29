@@ -41,6 +41,7 @@ py_binary(
     ],
     deps = [
         "//client:client",
+        "//config:config",
         "//environment:airraidramv0",
         "//environment:antv2",
         "//environment:cartpolev0",

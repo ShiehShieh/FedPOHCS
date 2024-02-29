@@ -12,6 +12,7 @@ import tensorflow.compat.v1 as tfv1
 tfv1.logging.set_verbosity(tfv1.logging.ERROR)
 
 import client.client as client_lib
+import config.config as config_lib
 import environment.hopperv2 as hopperv2_lib
 import environment.hopperv3 as hopperv3_lib
 import environment.halfcheetahv2 as halfcheetahv2_lib
