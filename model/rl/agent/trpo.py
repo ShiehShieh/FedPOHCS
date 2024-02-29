@@ -26,9 +26,6 @@ tfv1.disable_v2_behavior()
 tfv1.enable_control_flow_v2()
 
 
-floatX = config_lib.floatX # theano.config.floatX
-
-
 class DiscretePolicyNN(object):
   def __init__(self, num_actions=1, dropout_rate=None, seed=None):
     self.dropout_rate = dropout_rate
@@ -115,7 +112,7 @@ class ContinuousPolicyNN(object):
         kernel_initializer=tf.keras.initializers.GlorotNormal(seed),
         name="policy_network_o")
     self.r = tf.Variable(
-        shape=(num_actions,), dtype=floatX, trainable=True,
+        shape=(num_actions,), dtype=config_lib.floatX, trainable=True,
         initial_value=[0.0] * num_actions, name='logstd')  # MCCs.
 
   def var(self):
@@ -212,10 +209,10 @@ class TRPOActor(pg_lib.PolicyGradient):
 
     self.graph = tf.Graph()
     with self.graph.as_default():
-      self.beta = tf.Variable(initial_value=beta, dtype=floatX)
-      self.sigma = tf.Variable(initial_value=sigma, dtype=floatX)
-      self.mu = tf.Variable(initial_value=mu, dtype=floatX)
-      self.ent_coef = tf.Variable(initial_value=ent_coef, dtype=floatX)
+      self.beta = tf.Variable(initial_value=beta, dtype=config_lib.floatX)
+      self.sigma = tf.Variable(initial_value=sigma, dtype=config_lib.floatX)
+      self.mu = tf.Variable(initial_value=mu, dtype=config_lib.floatX)
+      self.ent_coef = tf.Variable(initial_value=ent_coef, dtype=config_lib.floatX)
 
       with tfv1.variable_scope(model_scope, default_name='trpo') as vs, tf.GradientTape(persistent=True) as gt:
 
@@ -226,14 +223,14 @@ class TRPOActor(pg_lib.PolicyGradient):
             self.output_types['actions'],
             self.output_shapes['actions'], name='actions')
         self.advantages = tfv1.placeholder(
-            floatX, [None], name='advantages')
+            config_lib.floatX, [None], name='advantages')
         self.sampled_prob = tfv1.placeholder(
-            floatX, [None, self.num_actions], name='probs')
-        self.dropout_pd = tfv1.placeholder(floatX, name='dropout_rate')
+            config_lib.floatX, [None, self.num_actions], name='probs')
+        self.dropout_pd = tfv1.placeholder(config_lib.floatX, name='dropout_rate')
         self.state_visitation_frequency = tfv1.placeholder(
-            floatX, name='state_visitation_frequency')
+            config_lib.floatX, name='state_visitation_frequency')
         self.norm_penalty = tfv1.placeholder(
-            floatX, name='norm_penalty')
+            config_lib.floatX, name='norm_penalty')
 
         if env.is_continuous:
           self.policy_network = ContinuousPolicyNN(
@@ -246,7 +243,7 @@ class TRPOActor(pg_lib.PolicyGradient):
           #     self.num_actions, seed=seed, linear=linear)
           self.prob_type = prob_type_lib.DiagGauss(self.num_actions)
           self.sampled_prob = tfv1.placeholder(
-              floatX, [None, self.num_actions * 2],
+              config_lib.floatX, [None, self.num_actions * 2],
               name='probs')
         else:
           self.policy_network = DiscretePolicyNN(
@@ -426,7 +423,7 @@ class TRPOActor(pg_lib.PolicyGradient):
   def proximal_term(self, n1, n2):
     v1 = n1.var()
     v2 = n2.var()
-    norm = tf.zeros((), dtype=floatX)
+    norm = tf.zeros((), dtype=config_lib.floatX)
     for i, v in enumerate(v1):
       # norm = norm + tf.square(tf.norm(v1[i] - v2[i], ord='2'))
       # norm = norm + tf.reduce_sum(tf.square(v1[i] - v2[i]))

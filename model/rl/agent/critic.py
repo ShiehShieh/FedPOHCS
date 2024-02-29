@@ -25,9 +25,6 @@ tfv1.disable_v2_behavior()
 tfv1.enable_control_flow_v2()
 
 
-floatX = config_lib.floatX # theano.config.floatX
-
-
 LAYER1_SIZE = 400
 LAYER2_SIZE = 300
 LEARNING_RATE = 1e-3
@@ -66,7 +63,7 @@ class Critic(object):
 
     def _build_model(self):
         """ Construct TensorFlow graph, including loss function, init op and train op """
-        obs = Input(shape=(self.obs_dim,), dtype=floatX, name='value_network_input')
+        obs = Input(shape=(self.obs_dim,), dtype=config_lib.floatX, name='value_network_input')
         # hid1 layer size is 10x obs_dim, hid3 size is 10, and hid2 is geometric mean
         # For Flow SUMO.
         hid1_units = 256

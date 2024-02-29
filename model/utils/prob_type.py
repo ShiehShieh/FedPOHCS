@@ -10,9 +10,6 @@ import model.utils.utils as utils_lib
 import config.config as config_lib
 
 
-floatX = config_lib.floatX # theano.config.floatX
-
-
 class ProbType(object):
     def sampled_variable(self):
         raise NotImplementedError
@@ -84,7 +81,7 @@ class DiagGauss(ProbType):
         mean0 = prob[:, :self.d]
         std0 = prob[:, self.d:]
         # exp[ -(a - mu)^2/(2*sigma^2) ] / sqrt(2*pi*sigma^2)
-        return - 0.5 * tf.reduce_sum(tf.math.square((a - mean0) / std0), axis=1) - 0.5 * tf.math.log(tf.constant(2.0 * np.pi, dtype=floatX)) * self.d - tf.reduce_sum(tf.math.log(std0), axis=1)
+        return - 0.5 * tf.reduce_sum(tf.math.square((a - mean0) / std0), axis=1) - 0.5 * tf.math.log(tf.constant(2.0 * np.pi, dtype=config_lib.floatX)) * self.d - tf.reduce_sum(tf.math.log(std0), axis=1)
 
     def likelihood(self, a, prob):
         return tf.math.exp(self.loglikelihood(a, prob))
@@ -225,7 +222,7 @@ class DiagGauss(ProbType):
     def sample(self, prob):
         mean_nd = prob[:, :self.d] 
         std_nd = prob[:, self.d:]
-        return np.random.randn(prob.shape[0], self.d).astype(floatX) * std_nd + mean_nd
+        return np.random.randn(prob.shape[0], self.d).astype(config_lib.floatX) * std_nd + mean_nd
 
     def maxprob(self, prob):
         return prob[:, :self.d]

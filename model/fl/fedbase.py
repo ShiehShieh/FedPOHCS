@@ -26,9 +26,6 @@ import model.rl.comp.svf as svf_lib
 import model.utils.vectorization as vectorization_lib
 
 
-floatX = config_lib.floatX # theano.config.floatX
-
-
 class FederatedBase(object):
 
   def __init__(self, clients_per_round, num_rounds, num_iter,
@@ -126,7 +123,7 @@ class FederatedBase(object):
     averaged_ws = [0] * len(cws[0][1])
     for (w, ws) in cws:  # w is the number of local samples
       for i, v in enumerate(ws):
-        averaged_ws[i] += (w / total_weight) * v.astype(floatX)
+        averaged_ws[i] += (w / total_weight) * v.astype(config_lib.floatX)
     return averaged_ws
 
   def _inner_sequential_loop(self, i_iter, active_clients, retry_min):

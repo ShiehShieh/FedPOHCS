@@ -11,9 +11,6 @@ import tensorflow.compat.v1 as tfv1
 import config.config as config_lib
 
 
-floatX = config_lib.floatX # theano.config.floatX
-
-
 def remove_first_step(data, axis=1):
   shape = tf.shape(data)
   ndims = data.get_shape().ndims
@@ -206,7 +203,7 @@ def tf_shuffle(lists):
 
 def stablize(x):
   eps = 1e-8
-  return tf.cast(tf.math.less_equal(x, eps), floatX) * eps + x
+  return tf.cast(tf.math.less_equal(x, eps), config_lib.floatX) * eps + x
 
 def categorical_kl(prob0, prob1):
   return tf.reduce_sum(
