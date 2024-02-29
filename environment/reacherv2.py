@@ -10,6 +10,8 @@ from gym.wrappers import TimeLimit
 # import model.utils.vec_env as vec_env_lib
 from stable_baselines3.common.vec_env import SubprocVecEnv, DummyVecEnv
 
+import config.config as config_lib
+
 
 # https://github.com/openai/gym/blob/master/gym/envs/mujoco/reacher.py
 

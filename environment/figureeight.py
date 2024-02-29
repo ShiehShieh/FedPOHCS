@@ -14,6 +14,8 @@ from flow.core.params import SumoCarFollowingParams
 from flow.controllers import IDMController, ContinuousRouter, RLController
 from flow.utils.registry import make_create_env
 
+import config.config as config_lib
+
 
 combination = [
     'h', 'r', 'h', 'h', 'r', 'r', 'h', 'r', 'h', 'h', 'h', 'r', 'r', 'r',

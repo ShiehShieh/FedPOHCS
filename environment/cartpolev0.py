@@ -7,6 +7,8 @@ import math
 from gym import spaces, logger
 from gym.utils import seeding
 
+import config.config as config_lib
+
 
 class CartPoleV0(object):
   def __init__(self, seed=None, initial_pos_range=[-0.05, 0.05]):

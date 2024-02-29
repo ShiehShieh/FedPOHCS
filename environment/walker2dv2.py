@@ -12,6 +12,8 @@ from gym import utils
 from gym.envs.mujoco import Walker2dEnv
 from gym.wrappers import TimeLimit
 
+import config.config as config_lib
+
 
 class Walker2dV2(object):
   def __init__(self, seed=None, initial_pos_range=[-0.05, 0.05]):

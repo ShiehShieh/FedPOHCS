@@ -10,6 +10,8 @@ from stable_baselines3.common.vec_env import VecEnv
 from flow.benchmarks.figureeight1 import flow_params
 from flow.utils.registry import make_create_env
 
+import config.config as config_lib
+
 
 flow_params['sim'].print_warnings = False
 flow_params['sim'].seed = 0

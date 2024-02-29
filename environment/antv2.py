@@ -8,6 +8,8 @@ from gym import spaces, logger
 from gym.spaces import Box, Discrete
 from gym.utils import seeding
 
+import config.config as config_lib
+
 
 class AntV2(object):
   def __init__(self, seed=None, initial_pos_range=[-0.05, 0.05]):

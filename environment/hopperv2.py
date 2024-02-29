@@ -14,6 +14,8 @@ from gym.wrappers import TimeLimit
 # import model.utils.vec_env as vec_env_lib
 from stable_baselines3.common.vec_env import SubprocVecEnv, DummyVecEnv
 
+import config.config as config_lib
+
 
 def generate_hopper_heterogeneity(i, htype, num_total_clients):
   x_left, x_right = -0.005, 0.005
