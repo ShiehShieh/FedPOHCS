@@ -129,7 +129,6 @@ def main(_):
     timestep_per_batch = 2048
     gradient_clip_norm = 10.0
   if FLAGS.env == 'hopper':
-    filt = True
     num_total_clients = 60
     timestep_per_batch = 2048
     gradient_clip_norm = 10.0
@@ -146,6 +145,8 @@ def main(_):
     timestep_per_batch = 2048
     gradient_clip_norm = 10.0  # MCC.
     num_total_clients = 60
+    config_lib.use_float32()
+    # config_lib.use_float64()
   if FLAGS.env == 'reacher':
     filt = False
     timestep_per_batch = 2048

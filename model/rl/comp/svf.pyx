@@ -64,7 +64,7 @@ def round_act(act, resolution):
     # a = max(min(a, 1.0), -1.0) # hopper.
     # o[i] = round_resolution(a, 0.4) # hopper.
 
-    # a = max(min(a, 1.0), -1.0)
+    a = max(min(a, 1.0), -1.0)
     o[i] = round_resolution(a, resolution)
   return o
 
