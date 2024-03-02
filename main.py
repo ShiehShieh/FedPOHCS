@@ -93,6 +93,7 @@ flags.DEFINE_integer("len_modeling_trajectory", 100, "The maximum length of traj
 flags.DEFINE_integer("num_modeling_round", 2, "The number of rounds for modeling. 2 for Hoppers and 5 for Mountain Cars.")
 flags.DEFINE_integer("num_test_episodes", 100, "The number of episode for testing. 100 for Hoppers and 10 for Mountain Cars.")
 flags.DEFINE_float("rounding_resolution", 0.4, "The resolution for rounding off observation and action for dynamics modeling. 0.4 for Hoppers and 0.1 for Mountain Cars.")
+flags.DEFINE_bool("clip_action", True, "If true, Mojoco actions will be clip to [-1.0, 1.0] beforeing modeling and computing the level of heterogeneity. True for Hoppers and False for Mountain Cars.")
 
 random.seed(0)
 np.random.seed(0)
@@ -133,6 +134,7 @@ def main(_):
     timestep_per_batch = 2048
     gradient_clip_norm = 10.0
     config_lib.use_float64()
+    svf_lib.set_clip(True)
     # minimum_lr = 1e-4
   if FLAGS.env == 'swimmer':
     filt = False
@@ -147,6 +149,7 @@ def main(_):
     num_total_clients = 60
     config_lib.use_float32()
     # config_lib.use_float64()
+    svf_lib.set_clip(False)
   if FLAGS.env == 'reacher':
     filt = False
     timestep_per_batch = 2048

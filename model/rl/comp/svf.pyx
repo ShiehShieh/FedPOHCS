@@ -19,11 +19,17 @@ from declarations cimport *
 
 
 RESOLUTION = 0.1
+CLIP = True
 
 
 def set_resolution(resolution):
   global RESOLUTION
   RESOLUTION = resolution
+
+
+def set_clip(clip):
+  global CLIP
+  CLIP = clip
 
 
 def defaultdict_float():
@@ -55,7 +61,7 @@ def round_obs(obs, resolution):
   return o
 
 
-def round_act(act, resolution):
+def round_act(act, resolution, clip):
   o = np.zeros(shape=act.shape)
   for i, a in enumerate(act):
     # o[i] = round_resolution(a, 0.1) # mcc.
@@ -64,7 +70,8 @@ def round_act(act, resolution):
     # a = max(min(a, 1.0), -1.0) # hopper.
     # o[i] = round_resolution(a, 0.4) # hopper.
 
-    a = max(min(a, 1.0), -1.0)
+    if clip:
+      a = max(min(a, 1.0), -1.0)
     o[i] = round_resolution(a, resolution)
   return o
 
@@ -86,6 +93,7 @@ def update_transition_probability(tpm, trajectories):
   tpm: [s, a, s'] -> float
   '''
   global RESOLUTION
+  global CLIP
   for i, trajectory in enumerate(trajectories):
     tactions = trajectory['actions']
     tnobs = trajectory['next_observations']
@@ -93,7 +101,7 @@ def update_transition_probability(tpm, trajectories):
       act = tactions[j]
       nobs = tnobs[j]
       obs = round_obs(obs, RESOLUTION)
-      act = round_act(act, RESOLUTION)
+      act = round_act(act, RESOLUTION, CLIP)
       nobs = round_obs(nobs, RESOLUTION)
       obsk = tuple(obs.tolist())
       actk = tuple(act.tolist())
@@ -106,6 +114,7 @@ def update_reward_function(rm, trajectories):
   rm: [s, a, r] -> float
   '''
   global RESOLUTION
+  global CLIP
   for i, trajectory in enumerate(trajectories):
     tactions = trajectory['actions']
     trewards = trajectory['reward']
@@ -113,7 +122,7 @@ def update_reward_function(rm, trajectories):
       act = tactions[j]
       r = trewards[j]
       obs = round_obs(obs, RESOLUTION)
-      act = round_act(act, RESOLUTION)
+      act = round_act(act, RESOLUTION, CLIP)
       obsk = tuple(obs.tolist())
       actk = tuple(act.tolist())
       rmoa = rm[obsk][actk]
