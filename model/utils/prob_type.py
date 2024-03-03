@@ -222,7 +222,9 @@ class DiagGauss(ProbType):
     def sample(self, prob):
         mean_nd = prob[:, :self.d] 
         std_nd = prob[:, self.d:]
-        return np.random.randn(prob.shape[0], self.d).astype(config_lib.floatX) * std_nd + mean_nd
+        # It is OK to keep using float64 here as long as the output here
+        # is not used by Tensorflow.
+        return np.random.randn(prob.shape[0], self.d).astype(np.float64) * std_nd + mean_nd
 
     def maxprob(self, prob):
         return prob[:, :self.d]
