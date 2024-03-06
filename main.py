@@ -135,7 +135,7 @@ def main(_):
     gradient_clip_norm = 10.0
     config_lib.use_float64()
     svf_lib.set_clip(True)
-    # minimum_lr = 1e-4
+    minimum_lr = 1e-4
   if FLAGS.env == 'swimmer':
     filt = False
     num_total_clients = 15
