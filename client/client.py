@@ -18,7 +18,7 @@ class Client(object):
       self, cid, group, agent, env, len_modeling_trajectory=1000,
       num_modeling_round=5,  num_test_episodes=100, filt=True,
       parallel=1, extra_features=set(['next_observations', 'probs']),
-      universial_vec_env=None, warmup=True):
+      universial_vec_env=None, warmup=True, warmupsteps=5e4):
     self.cid = cid
     self.group = group
     self.agent = agent
@@ -55,10 +55,9 @@ class Client(object):
     #   return
     # return
     envs = self.env.get_parallel_envs(10)
-    paths, _ = self.rollout(envs, 5e4, -1)
-    # envs.close()
-    # return
+    # paths, _ = self.rollout(envs, 5e4, -1)
     # paths, _ = self.rollout(envs, 5e4, -1)  # mcc.
+    paths, _ = self.rollout(envs, warmupsteps, -1)  # mcc.
     # self.update_initial_state_distribution(paths)
     # self.update_transition_probability(paths)
     # self.update_reward_function(paths)

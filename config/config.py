@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 
 import numpy as np
+import tensorflow as tf
 
 
-floatX = np.float32 # Tensorflow can handle numpy dtype.
+floatX = tf.dtypes.float32 # Tensorflow can handle numpy dtype.
 
 
 def use_float32():
   global floatX
-  floatX = np.float32
+  floatX = tf.dtypes.float32
 
 
 def use_float64():
   global floatX
-  floatX = np.float64
+  floatX = tf.dtypes.float64

@@ -440,6 +440,7 @@ class FederatedBase(object):
       logging.error('fit time: %f s.' % (time.time() - start1,))
 
     all_keys = {k for k in all_keys if len(all_keys[k]) > 1}
+    # all_keys = {k for k in all_keys}
     common_k1 = set([k + kk for k in d_as[0][1] for kk in d_as[0][1][k]])
     common_k2 = set([k + kk for k in d_as[1][1] for kk in d_as[0][1][k]])
     common_keys = common_k1.intersection(common_k2)

@@ -32,12 +32,12 @@ import model.rl.comp.svf as svf_lib
 import model.optimizer.dbpg as dbpg_lib
 import model.optimizer.pgd as pgd_lib
 
-# tfv1.disable_eager_execution()
-# 
-# tfv1.disable_v2_behavior()
-# # Need to enable TFv2 control flow with support for higher order derivatives
-# # in keras LSTM layer.
-# tfv1.enable_control_flow_v2()
+tfv1.disable_eager_execution()
+
+tfv1.disable_v2_behavior()
+# Need to enable TFv2 control flow with support for higher order derivatives
+# in keras LSTM layer.
+tfv1.enable_control_flow_v2()
 
 FLAGS = flags.FLAGS
 
@@ -118,6 +118,7 @@ def main(_):
   timestep_per_batch = 2048
   filt = True
   minimum_lr = 1e-8
+  warmupsteps = 5e4
   # gradient_clip_norm = 0.5  # Reacher-v2.
   # gradient_clip_norm = 100.0  # Reacher-v2.
   gradient_clip_norm = None  # Reacher-v2.
@@ -136,6 +137,7 @@ def main(_):
     config_lib.use_float64()
     svf_lib.set_clip(True)
     minimum_lr = 1e-4
+    warmupsteps = 5e4
   if FLAGS.env == 'swimmer':
     filt = False
     num_total_clients = 15
@@ -150,6 +152,7 @@ def main(_):
     config_lib.use_float32()
     # config_lib.use_float64()
     svf_lib.set_clip(False)
+    warmupsteps = 1e5
   if FLAGS.env == 'reacher':
     filt = False
     timestep_per_batch = 2048
