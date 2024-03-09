@@ -364,7 +364,7 @@ def main(_):
         num_modeling_round=FLAGS.num_modeling_round,
         num_test_episodes=FLAGS.num_test_episodes, parallel=FLAGS.parallel,
         filt=filt, extra_features=set(['next_observations']),
-        warmup=FLAGS.eval_heterogeneity)
+        warmup=FLAGS.eval_heterogeneity, warmupsteps=warmupsteps)
     if FLAGS.eval_heterogeneity:
       client.enable_svf(FLAGS.svf_n_timestep)
     fl.register(client)
